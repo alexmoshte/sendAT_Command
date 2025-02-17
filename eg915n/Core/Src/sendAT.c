@@ -26,37 +26,41 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 	}
 }
 
-int SendATCommand(char *cmd, char *response)
+int SendATCommand(char *cmd, char *response, uint32_t Timeout)
 {
-
+   uint32_t pastTime = HAL_GetTick();
 	HAL_UART_Transmit(&huart1, (uint8_t*)cmd, strlen(cmd), 3000);
-	HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*)DMA_Rx_Buf, sizeof(DMA_Rx_Buf));
-    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 
-    char *ptr = strstr(Loc_Buf, response);
-
-        if(dBUG)
-        {
-        	char *ptr_ok = strstr(Loc_Buf, "OK");
-        	if(ptr_ok != NULL)
-        	{
-        		HAL_UART_Transmit(&huart3, (uint8_t*)Loc_Buf, strlen(Loc_Buf), 1000);
-        	}
-        	char *ptr_err = strstr(Loc_Buf, "ERROR");
-        	if(ptr_err != NULL)
-        	{
-        		HAL_UART_Transmit(&huart3, (uint8_t*)Loc_Buf, strlen(Loc_Buf), 1000);
-        	}
-        }
-
-    if(ptr != NULL)
+    while(HAL_GetTick() - pastTime < Timeout)
     {
-    	return 0;
+    	HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*)DMA_Rx_Buf, sizeof(DMA_Rx_Buf));
+    	__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+    	char *ptr = strstr(Loc_Buf, response);
+    	        if(dBUG)
+    	        {
+    	        	char *ptr_ok = strstr(Loc_Buf, "OK");
+    	        	if(ptr_ok != NULL)
+    	        	{
+    	        		HAL_UART_Transmit(&huart3, (uint8_t*)Loc_Buf, strlen(Loc_Buf), 1000);
+    	        	}
+    	        	char *ptr_err = strstr(Loc_Buf, "ERROR");
+    	        	if(ptr_err != NULL)
+    	        	{
+    	        		HAL_UART_Transmit(&huart3, (uint8_t*)Loc_Buf, strlen(Loc_Buf), 1000);
+    	        	}
+    	        }
+
+    	    if(ptr != NULL)
+    	    {
+    	    	return 0;
+    	    }
+    	    else
+    	    {
+    	    	return 1;
+    	    }
     }
-    else
-    {
-    	return 1;
-    }
+    return 0;
+
 }
 
 uint8_t  SendATCommand_O(char *cmd, char *Response, uint32_t TimeOut)

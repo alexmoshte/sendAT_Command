@@ -110,7 +110,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 //	  SendATCommand_O(cmnd, "OK", 300);
-	  SendATCommand(cmnd, "OK");
+	  SendATCommand("AT+QHTTPPOST=48,80,80\r\n", "QHTTPPOST:", 20000);
 //	  HAL_Delay(200);
   }
   /* USER CODE END 3 */

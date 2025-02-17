@@ -29,7 +29,7 @@ extern char DMA_Rx_Buf[AT_BUFFER_LENGTH];
 extern char Loc_Buf[AT_BUFFER_LENGTH];
 
 void Eg_On(uint32_t TimeOn);
-int SendATCommand(char *cmd, char *response);
+int SendATCommand(char *cmd, char *response, uint32_t Timeout);
 uint8_t  SendATCommand_O(char *cmd, char *Response, uint32_t TimeOut);
 
 #endif /* INC_SENDAT_H_ */
